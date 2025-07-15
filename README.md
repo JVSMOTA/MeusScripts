@@ -56,6 +56,7 @@ $ git commit -m "feat: Add new authentication feature"
 > ```bash
 > git commit -m ?
 > ```
+> ⚠️  In Zsh, use `git commit -m "?"` (with quotes) to see the list of commit types. Without quotes, Zsh may interpret it as a file pattern and give an error.
 > 
 > - The list of commit types and their emojis can be customized in the `bin/commit`.
 > 
