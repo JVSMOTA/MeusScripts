@@ -1,13 +1,42 @@
 #!/usr/bin/env bash
 
-# Check if the script is already installed in ~/.bashrc
-if grep -q '# SCRIPT TO ADD EMOJI' ~/.bashrc; then
-    echo "already installed."
-else
-    # Add the script to ~/.bashrc
-    echo '# SCRIPT TO ADD EMOJI
+INSTALL_SNIPPET='
+# SCRIPT TO ADD EMOJI
 git() {
     ~/.commit-emoji-adder/bin/git "$@"
-}' >> ~/.bashrc && echo "done." && exec bash
-fi
+}
+'
+
+add_snippet_to_file() {
+    local shell_rc="$1"
+    if [ -f "$shell_rc" ]; then
+        if grep -q 'git() { ~/.commit-emoji-adder/bin/git' "$shell_rc"; then
+            echo "✅ Wrapper já instalado em $shell_rc"
+        else
+            cp "$shell_rc" "${shell_rc}.backup"
+            echo "$INSTALL_SNIPPET" >> "$shell_rc"
+            echo "✅ Adicionado ao $shell_rc (backup criado: ${shell_rc}.backup)"
+        fi
+    fi
+}
+
+# Detectar o shell
+user_shell=$(basename "$SHELL")
+
+case "$user_shell" in
+    bash)
+        add_snippet_to_file "$HOME/.bashrc"
+        source "$HOME/.bashrc"
+        ;;
+    zsh)
+        add_snippet_to_file "$HOME/.zshrc"
+        source "$HOME/.zshrc"
+        ;;
+    *)
+        echo "⚠️ Shell não suportado automaticamente. Adicione o wrapper manualmente:"
+        echo "$INSTALL_SNIPPET"
+        ;;
+esac
+
+echo "🚀 Instalação concluída. Use \`git commit -m \"tipo: descrição\"\` para começar."
 
